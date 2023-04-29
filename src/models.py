@@ -277,8 +277,8 @@ class OCSolver(nn.Module):
     return jnp.array(u_opt_list)
 
 
-class VisionTransformer(nn.Module):
-  """VisionTransformer."""
+class MPCTransformer(nn.Module):
+  """MPCTransformer."""
 
   patches: Any
   transformer: Any
