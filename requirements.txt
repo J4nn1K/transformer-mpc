@@ -1,3 +1,4 @@
+torch
 jax
 jaxlib
 git+https://github.com/J4nn1K/trajax
