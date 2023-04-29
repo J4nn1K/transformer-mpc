@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset, DataLoader, random_split
 import torch
 import jax
+import numpy as np
 
 from src.config import config
 
@@ -20,15 +21,17 @@ class FieldDataset(Dataset):
     return len(self.grids) - self.horizon
   
   def __getitem__(self, idx):
-    grid = jax.numpy.expand_dims(self.grids.numpy(), axis=-1)
-    commands = self.commands[idx:idx+self.horizon].numpy()
+    grid = torch.unsqueeze(self.grids[idx], dim=-1)
+    commands = self.commands[idx:idx+self.horizon]
 
     return grid, commands
-
-
-def create_datasets():
-  dataset = FieldDataset()
   
+def create_dataset():
+  return FieldDataset()
+
+def create_dataset_split():
+  dataset = create_dataset()
+    
   train_size = int((config['training']['train_ratio']) * len(dataset))
   val_size = len(dataset) - train_size
 
@@ -36,7 +39,7 @@ def create_datasets():
 
 
 def create_dataloaders():
-  train_dataset, val_dataset = create_datasets()
+  train_dataset, val_dataset = create_dataset_split()
   
   train_loader = DataLoader(train_dataset, 
                             batch_size=config['training']['batch_size'], 
