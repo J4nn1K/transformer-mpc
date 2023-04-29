@@ -1,6 +1,6 @@
 config = {
   'data': {
-    'path': '../data/robot_field_data.pt',
+    'path': '../data/impossible_obstacle.pt',
     'dt': 0.025,
     'shape': (100, 100, 1) # HxWxC
   },
@@ -23,6 +23,8 @@ config = {
   }, 
   'training': {
     'train_ratio': 0.8,
-    'batch_size': 1
+    'batch_size': 1,
+    'learning_rate': 0.01,
+    'momentum' : 0.9,
   }
 }
