@@ -1,3 +1,3 @@
-jax==0.4.6
-jaxlib==0.4.6
-trajax==0.0.1
+jax
+jaxlib
+git+https://github.com/J4nn1K/trajax
