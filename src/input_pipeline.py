@@ -1,25 +1,29 @@
 from torch.utils.data import Dataset, DataLoader, random_split
 import torch
+import jax
 
 from src.config import config
 
+
 class FieldDataset(Dataset):
-    def __init__(self, file_dir=config['data']['path']):      
-        every_n = int(config['control']['dt']/config['data']['dt'])
-        self.horizon = config['control']['horizon']
+  ''' Dataset class specific to saved format.'''
+  def __init__(self, file_dir=config['data']['path']):      
+    every_n = int(config['model']['solver']['dt']/config['data']['dt'])
+    self.horizon = config['model']['solver']['horizon']
+
+    grids, commands = torch.load(file_dir)
+    
+    self.grids = grids[::every_n]
+    self.commands = commands[::every_n][:,[0,1,5]]  # grab u_x, u_y, u_w
+
+  def __len__(self):
+    return len(self.grids) - self.horizon
   
-        grids, commands = torch.load(file_dir)
-        
-        self.grids = grids[::every_n]
-        self.commands = commands[::every_n][:,[0,1,5]]  # grab u_x, u_y, u_w
+  def __getitem__(self, idx):
+    grid = jax.numpy.expand_dims(self.grids.numpy(), axis=-1)
+    commands = self.commands[idx:idx+self.horizon].numpy()
 
-    def __len__(self):
-        return len(self.grids) - self.horizon
-
-    def __getitem__(self, idx):
-        grid = self.grids[idx]
-        commands = self.commands[idx:idx+self.horizon]
-        return grid, commands
+    return grid, commands
 
 
 def create_datasets():
