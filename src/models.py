@@ -214,7 +214,7 @@ class OCSolver(nn.Module):
   
     x = inputs
     n, _ = x.shape
-        
+    
     P = x[:, :36].reshape((n, 6, 6))
     q = x[:, 36:].reshape((n, 6))
         
@@ -314,14 +314,17 @@ class MPCTransformer(nn.Module):
       x = self.encoder(name='Transformer', **self.transformer)(x, train=train)
       
     # Final embedding of a single token 
-    x = x[:, -1]
+    # x = x[:, -1]
+    
+    
+    # Linear layer
+    x = x[:, 0]
+    x = nn.Dense(features=self.num_output,
+                 name='head')(x)
+    # x = nn.tanh(x)
     
     x = self.oc_solver(name='Solver', **self.solver)(x)
     
 
-    # x = nn.Dense(features=self.num_output,
-    #              name='head',
-    #              kernel_init=nn.initializers.zeros,
-    #              bias_init=nn.initializers.constant(self.head_bias_init))(x)
     
     return x
