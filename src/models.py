@@ -204,14 +204,16 @@ class Encoder(nn.Module):
 class OCSolver(nn.Module):
   """CFTOC Solver."""
 
-  dt: float = .1
-  horizon: int = 10
+  dt: float
+  horizon: int
+  cost_weights: dict
+  u_des: list
 
   @nn.compact
   def __call__(self, inputs):
   
     x = inputs
-    n, l = x.shape
+    n, _ = x.shape
         
     P = x[:, :36].reshape((n, 6, 6))
     q = x[:, 36:].reshape((n, 6))
@@ -241,14 +243,13 @@ class OCSolver(nn.Module):
         return x + self.dt * system(x, u, t)  
 
       def cost(x, u, t):
-        w = {'ref': 1e2, 'learned': 1.}
+        w = self.cost_weights
         
-        u_des = jnp.array([.4, 0., 0.])
-        u_err = u_des - u
+        u_err = jnp.array(self.u_des) - u
         
         xu = jnp.concatenate([x,u])
         
-        stage_cost = w['ref'] * jnp.dot(u_err, u_err)
+        stage_cost = w['reference'] * jnp.dot(u_err, u_err)
         stage_cost += w['learned'] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P[i].T), P[i]), xu)
         stage_cost += w['learned'] * jnp.matmul(q[i].T, xu)
         
@@ -299,8 +300,8 @@ class MPCTransformer(nn.Module):
 
     # We can merge s2d+emb into a single conv; it's the same.
     x = nn.Conv(features=self.hidden_size,
-                kernel_size=self.patches,   # NOTE .size
-                strides=self.patches,       # NOTE .size
+                kernel_size=self.patches,
+                strides=self.patches,
                 padding='VALID',
                 name='embedding')(x)
     # Here, x is a grid of embeddings.
@@ -317,17 +318,10 @@ class MPCTransformer(nn.Module):
     
     x = self.oc_solver(name='Solver', **self.solver)(x)
     
-    # print(x.shape)
 
     # x = nn.Dense(features=self.num_output,
     #              name='head',
     #              kernel_init=nn.initializers.zeros,
     #              bias_init=nn.initializers.constant(self.head_bias_init))(x)
     
-    # if self.representation_size is not None:
-    #   x = nn.Dense(features=self.representation_size, name='pre_logits')(x)
-    #   x = nn.tanh(x)
-    # else:
-    #   x = IdentityLayer(name='pre_logits')(x)
-
     return x
