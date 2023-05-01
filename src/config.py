@@ -7,15 +7,20 @@ config = {
   'model': {
     'patches': (4,4),
     'transformer': {
-      'num_layers': 3,
-      'mlp_dim': 64,
-      'num_heads': 1,
+      'num_layers': 6,
+      'mlp_dim': 512,
+      'num_heads': 3,
       'dropout_rate': 0.1,
       'attention_dropout_rate': 0.1,
     },
     'solver': {
       'dt': 0.1,
       'horizon': 10,
+      'cost_weights': {
+        'learned': 1.0,
+        'reference' : 1e0,
+      },
+      'u_des': [0.4, 0.0, 0.0] 
     },
     'hidden_size': 42,
     'num_output': 42,
