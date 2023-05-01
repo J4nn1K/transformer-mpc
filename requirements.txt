@@ -1,4 +1,7 @@
 torch
 jax
 jaxlib
+flax
+tqdm
+clu
 git+https://github.com/J4nn1K/trajax
