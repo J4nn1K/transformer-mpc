@@ -24,7 +24,6 @@ config = {
     },
     'hidden_size': 42,
     'num_output': 42,
-    'representation_size': 64,
   }, 
   'training': {
     'train_ratio': 0.8,

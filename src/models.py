@@ -286,7 +286,6 @@ class MPCTransformer(nn.Module):
   solver: Any
   hidden_size: int
   num_output: int
-  representation_size: Optional[int] = None
   head_bias_init: float = 0.
   encoder: Type[nn.Module] = Encoder
   oc_solver: Type[nn.Module] = OCSolver
