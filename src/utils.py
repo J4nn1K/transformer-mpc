@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 from matplotlib.colors import ListedColormap
+from tqdm import tqdm
+import torch
+
 
 def save_grids_as_video(grids, indices, video_filename, freq_out, upscale_factor=8):
     if not indices:
@@ -37,3 +40,17 @@ def save_grids_as_video(grids, indices, video_filename, freq_out, upscale_factor
     # Close the video writer
     video_writer.release()
     print("Video saved as", video_filename)
+    
+
+def get_model_output(model, state, dataset, indices):
+  commands ={'target': [], 'pred': []}
+  for i in tqdm(indices):
+    grid, u_target = dataset.__getitem__(i)
+    grid = torch.unsqueeze(grid, 0).numpy()
+  
+    u_pred = model.apply({'params': state.params}, grid, train=False)
+  
+    commands['target'].append(u_target[0,0])
+    commands['pred'].append(u_pred[0,0,0])
+    
+  return commands
