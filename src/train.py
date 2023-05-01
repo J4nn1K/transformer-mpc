@@ -124,8 +124,8 @@ def train(model, num_epochs, train_loader, val_loader):
       metrics_history[f'val_{metric}'].append(value)
     test_state = state.replace(metrics=test_state.metrics.empty())
   
-    print(f"Epoch: {epoch}, "
-          f"Train Loss: {metrics_history['train_loss'][-1]}, "
-          f"Val Loss: {metrics_history['val_loss'][-1]}, ")  
+    print(f"Epoch: {epoch+1}, "
+          f"Train Loss: {metrics_history['train_loss'][-1]:.6f}, "
+          f"Val Loss: {metrics_history['val_loss'][-1]:.6f}, ")  
 
   return state, metrics_history
