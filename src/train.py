@@ -91,7 +91,8 @@ def train(model, num_epochs, train_loader, val_loader):
   for epoch in epoch_iterator:
     
     # TRAINING
-    train_iterator = tqdm(train_loader)
+    train_iterator = train_loader
+    # train_iterator = tqdm(train_loader)
     for grids, commands in train_iterator:   
       # total_steps += 1   
       
@@ -100,7 +101,7 @@ def train(model, num_epochs, train_loader, val_loader):
       state = train_step(state, batch)
       state = compute_metrics(state=state, batch=batch)
       
-      train_iterator.set_postfix(train_loss=state.metrics.loss.compute_value().value)
+      # train_iterator.set_postfix(train_loss=state.metrics.loss.compute_value().value)
 
     for metric, value in state.metrics.compute().items():  # compute metrics
       metrics_history[f'train_{metric}'].append(value)     # record metrics
@@ -109,21 +110,22 @@ def train(model, num_epochs, train_loader, val_loader):
     test_state = state
     
     # EVALUATION
-    val_iterator = tqdm(val_loader)
+    val_iterator = val_loader
+    # val_iterator = tqdm(val_loader)
     for grids, commands in val_iterator:   
       # total_steps += 1   
       
       batch = {'inputs': grids.numpy(), 'targets': commands.numpy()}
       test_state = compute_metrics(state=test_state, batch=batch)
       
-      val_iterator.set_postfix(val_loss=test_state.metrics.loss.compute_value().value)
+      # val_iterator.set_postfix(val_loss=test_state.metrics.loss.compute_value().value)
       
     for metric, value in test_state.metrics.compute().items():
       metrics_history[f'val_{metric}'].append(value)
     test_state = state.replace(metrics=test_state.metrics.empty())
   
     print(f"Epoch: {epoch}, "
-          f"Loss: {metrics_history['train_loss'][-1]}, "
-          f"Loss: {metrics_history['val_loss'][-1]}, ")  
+          f"Train Loss: {metrics_history['train_loss'][-1]}, "
+          f"Val Loss: {metrics_history['val_loss'][-1]}, ")  
 
   return state, metrics_history
