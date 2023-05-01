@@ -313,17 +313,15 @@ class MPCTransformer(nn.Module):
       x = self.encoder(name='Transformer', **self.transformer)(x, train=train)
       
     # Final embedding of a single token 
-    # x = x[:, -1]
+    x = x[:, -1]
     
     
     # Linear layer
-    x = x[:, 0]
+    # x = x[:, 0]
     x = nn.Dense(features=self.num_output,
                  name='head')(x)
     # x = nn.tanh(x)
     
     x = self.oc_solver(name='Solver', **self.solver)(x)
-    
 
-    
     return x
