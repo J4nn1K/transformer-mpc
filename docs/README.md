@@ -16,4 +16,3 @@ gcloud compute tpus tpu-vm ssh tpu0 --zone us-central1-b
 ```
 pip install jax[tpu] -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 ```
-
