@@ -5,6 +5,7 @@ import optax
 import jax
 import jax.numpy as jnp
 from tqdm import tqdm
+import wandb
 
 
 from src.config import config
@@ -74,7 +75,7 @@ def compute_metrics(*, state, batch, train=True):
   return state
 
 
-def train(model, num_epochs, train_loader, val_loader):
+def train(model, num_epochs, train_loader, val_loader, use_wandb=False):
   init_rng = {'params': jax.random.PRNGKey(0), 'dropout': jax.random.PRNGKey(1)}
   state = create_train_state(model, 
                              init_rng, 
@@ -84,8 +85,7 @@ def train(model, num_epochs, train_loader, val_loader):
   
   metrics_history = {'train_loss': [],
                      'val_loss': []}
-  total_steps = 0
-  train_logfreq = 10
+  
   epoch_iterator = range(num_epochs)
   
   for epoch in epoch_iterator:
@@ -105,6 +105,7 @@ def train(model, num_epochs, train_loader, val_loader):
 
     for metric, value in state.metrics.compute().items():  # compute metrics
       metrics_history[f'train_{metric}'].append(value)     # record metrics
+      wandb.log({f'train_{metric}': value})
     state = state.replace(metrics=state.metrics.empty())   # reset metrics
     
     test_state = state
@@ -122,6 +123,7 @@ def train(model, num_epochs, train_loader, val_loader):
       
     for metric, value in test_state.metrics.compute().items():
       metrics_history[f'val_{metric}'].append(value)
+      wandb.log({f'val_{metric}': value})
     test_state = state.replace(metrics=test_state.metrics.empty())
   
     print(f"Epoch: {epoch+1}, "
