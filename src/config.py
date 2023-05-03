@@ -1,15 +1,15 @@
 config = {
   'data': {
-    'path': '../data/obstacles.npz',
-    'type': 'rgb',          # ['rgb', 'depth', 'map']
+    'path': 'data/obstacles.npz',
+    'type': 'map',          # ['rgb', 'depth', 'map']
     'shape': (100, 100, 1)  # H x W x C
   },
   'model': {
-    'patches': (4,4),
+    'patches': (5,5),
     'transformer': {
-      'num_layers': 6,
-      'mlp_dim': 512,
-      'num_heads': 3,
+      'num_layers': 3,
+      'mlp_dim': 64,
+      'num_heads': 1,
       'dropout_rate': 0.1,
       'attention_dropout_rate': 0.1,
     },
