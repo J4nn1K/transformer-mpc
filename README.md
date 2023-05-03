@@ -10,3 +10,10 @@ The easiest way to reproduce the training is by uploading `main_collab.ipynb` to
 ```
 pip install -e .
 ```
+## How to download the dataset
+```
+export FILE_ID=1oeb7QHveAzVp08Jwiv7pepLB9geRFUHO
+export FILENAME=obstacles.npz
+
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${FILE_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${FILE_ID}" -O ${FILENAME} && rm -rf /tmp/cookies.txt
+```
