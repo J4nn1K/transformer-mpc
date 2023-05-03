@@ -11,7 +11,7 @@ def save_grids_as_video(grids, indices, video_filename, freq_out, upscale_factor
         return
 
     # Get the dimensions of the grids and upscale them
-    height, width = grids[0].shape
+    height, width, _ = grids[0].shape
     upscaled_width = int(width * upscale_factor)
     upscaled_height = int(height * upscale_factor)
 
@@ -25,11 +25,14 @@ def save_grids_as_video(grids, indices, video_filename, freq_out, upscale_factor
     for index in indices:
         # Get the grid to save and apply the color map
         grid_to_save = grids[index]
-        grid_color_mapped = cmap(grid_to_save + 1) / 2  # Normalize values to [0, 1])
+        
+        grid = (grid_to_save + 1) / 2 * 255
+        # grid_color_mapped = cmap(grid_to_save + 1) / 2  # Normalize values to [0, 1])
 
         # Convert the grid to the correct format for the video writer
-        grid_BGR = (grid_color_mapped[:, :, :3] * 255).astype(np.uint8)
-        grid_BGR = cv2.cvtColor(grid_BGR, cv2.COLOR_RGB2BGR)
+        # grid_BGR = (grid_color_mapped[:, :, :3] * 255).astype(np.uint8)
+        
+        grid_BGR = cv2.cvtColor(grid.astype(np.uint8), cv2.COLOR_RGB2BGR)
 
         # Resize the frame
         grid_resized = cv2.resize(grid_BGR, (upscaled_width, upscaled_height), interpolation=cv2.INTER_AREA)
