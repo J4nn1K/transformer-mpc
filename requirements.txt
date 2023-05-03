@@ -4,4 +4,5 @@ jaxlib
 flax
 tqdm
 clu
+wandb
 git+https://github.com/J4nn1K/trajax
