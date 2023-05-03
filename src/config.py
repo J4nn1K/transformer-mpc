@@ -1,8 +1,8 @@
 config = {
   'data': {
     'path': '../data/impossible_obstacle.pt',
-    'dt': 0.025,
-    'shape': (100, 100, 1) # HxWxC
+    'type': 'map',          # ['rgb', 'depth', 'map']
+    'shape': (100, 100, 1)  # H x W x C
   },
   'model': {
     'patches': (4,4),

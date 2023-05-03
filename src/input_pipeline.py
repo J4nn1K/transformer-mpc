@@ -9,22 +9,29 @@ from src.config import config
 class FieldDataset(Dataset):
   ''' Dataset class specific to saved format.'''
   def __init__(self, file_dir=config['data']['path']):      
-    every_n = int(config['model']['solver']['dt']/config['data']['dt'])
     self.horizon = config['model']['solver']['horizon']
-
-    grids, commands = torch.load(file_dir)
     
-    self.grids = grids[::every_n]
-    self.commands = commands[::every_n][:,[0,1,5]]  # grab u_x, u_y, u_w
+    data = np.load(file_dir)
+    
+    if config['data']['type'] == 'map':
+      self.inputs = data['maps']
+    elif config['data']['type'] == 'rgb':
+      self.inputs = data['color_images']
+    elif config['data']['type'] == 'depth':
+      self.inputs = data['depth_images']
+    else:
+      print('unkown data type')
+    
+    self.commands = data['cmd_vels']
 
   def __len__(self):
-    return len(self.grids) - self.horizon
+    return len(self.commands) - self.horizon
   
   def __getitem__(self, idx):
-    grid = torch.unsqueeze(self.grids[idx], dim=-1)
-    commands = self.commands[idx:idx+self.horizon]
+    input = self.inputs[idx]
+    target = self.commands[idx:idx+self.horizon]
 
-    return grid, commands
+    return input, target
   
 def create_dataset():
   return FieldDataset()
