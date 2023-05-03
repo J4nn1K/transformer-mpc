@@ -5,3 +5,8 @@ Real-world robot navigation in human-centric environments remains an unsolved pr
 
 ## How to run
 The easiest way to reproduce the training is by uploading `main_collab.ipynb` to Google Collab. Make sure to save the dataset mentioned in the abstract in your Google Drive.
+
+## Installation
+```
+pip install -e .
+```
