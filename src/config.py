@@ -1,7 +1,7 @@
 config = {
   'data': {
-    'path': '../data/impossible_obstacle.pt',
-    'type': 'map',          # ['rgb', 'depth', 'map']
+    'path': '../data/obstacles.npz',
+    'type': 'rgb',          # ['rgb', 'depth', 'map']
     'shape': (100, 100, 1)  # H x W x C
   },
   'model': {
