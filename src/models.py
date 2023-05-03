@@ -283,7 +283,7 @@ class OCSolver(nn.Module):
 class MPCTransformer(nn.Module):
   """MPCTransformer."""
   
-  pooling: Optional[Any] = None
+
   patches: Any
   transformer: Any
   solver: Any
@@ -293,7 +293,7 @@ class MPCTransformer(nn.Module):
   encoder: Type[nn.Module] = Encoder
   oc_solver: Type[nn.Module] = OCSolver
   model_name: Optional[str] = None  
-  
+  pooling: Optional[Any] = None
 
   @nn.compact
   def __call__(self, inputs, *, train):
