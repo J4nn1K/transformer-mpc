@@ -29,7 +29,7 @@ config = {
     'train_ratio': 0.8,
     'batch_size': 1,
     'learning_rate': 0.01,
-    'num_epochs': 50,
+    'num_epochs': 25,
     'momentum' : 0.9,
   }
 }
