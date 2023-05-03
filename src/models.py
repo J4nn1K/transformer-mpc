@@ -300,8 +300,9 @@ class MPCTransformer(nn.Module):
     n, h, w, c = x.shape
     
     if not config['data']['type'] == 'map':
-      x = nn.avg_pool(window_shape=(4,4),
-                      strides=(4,4))(x)
+      x = nn.avg_pool(x, 
+                      window_shape=(4,4),
+                      strides=(4,4))
 
     # We can merge s2d+emb into a single conv; it's the same.
     x = nn.Conv(features=self.hidden_size,
