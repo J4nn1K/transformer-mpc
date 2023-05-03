@@ -2,16 +2,19 @@ import rosbag
 import numpy as np
 import cv2
 import pandas as pd
+from tqdm import tqdm
 
-dataset_name = 'impossible_obstacle'
+dataset_name = 'obstacles12'
 
-BAG_PATH = '../data/session2023_05_01_impossible_obstacles.bag'
+BAG_PATH = f'../data/session2023_05_01_{dataset_name}.bag'
 OUT_PATH = f'../data/{dataset_name}.npz'
 
+print('Loading rosbag...')
 bag = rosbag.Bag(BAG_PATH)
 
 
 # GET DATA FROM ROSBAG
+print('Extracting topics...')
 topics = ['/astra/color/image_raw',
           '/astra/depth/image_raw',
           '/local_map',
@@ -21,7 +24,7 @@ data = {}
 for topic in topics:
   data[topic] = {'time': [], 'data': []}
     
-for topic, msg, time in bag.read_messages(topics=topics):
+for topic, msg, time in tqdm(bag.read_messages(topics=topics)):
   data[topic]['time'].append(time.to_nsec())
   
   if topic =='/astra/color/image_raw':
@@ -42,6 +45,8 @@ for topic, msg, time in bag.read_messages(topics=topics):
     )
   else: print('unknown topic')
   
+print('Creating dataframes...')
+  
 color_images = pd.DataFrame.from_dict(data['/astra/color/image_raw'])
 depth_images = pd.DataFrame.from_dict(data['/astra/depth/image_raw'])
 maps = pd.DataFrame.from_dict(data['/local_map'])
@@ -57,6 +62,7 @@ df['cmd_vels'] = None
 
 
 # TIMESTAMP MATCHING
+print('Matching timestamps...')
 for i, time in enumerate(df['time']):
   # find closest match in depth_images
   idx = depth_images['time'].sub(time).abs().idxmin()
@@ -70,6 +76,7 @@ for i, time in enumerate(df['time']):
   
   
 # PROCESSING
+print('Processing data...')
 color_images = np.array(df['color_images'].to_list())
 
 depth_images = np.array(df['depth_images'].to_list())
@@ -90,8 +97,11 @@ cmd_vels=cmd_vels[::3]
 
 
 # SAVING
-np.savez(OUT_PATH, 
-         color_images=color_images, 
-         depth_images=depth_images,
-         maps=maps,
-         cmd_vels=cmd_vels)
+print('Saving data...')
+np.savez_compressed(OUT_PATH, 
+                    color_images=color_images, 
+                    depth_images=depth_images,
+                    maps=maps,
+                    cmd_vels=cmd_vels)
+
+print(f'Dataset saved to {OUT_PATH}')
