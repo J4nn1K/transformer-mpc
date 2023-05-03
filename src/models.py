@@ -282,7 +282,8 @@ class OCSolver(nn.Module):
 
 class MPCTransformer(nn.Module):
   """MPCTransformer."""
-
+  
+  pooling: Optional[Any] = None
   patches: Any
   transformer: Any
   solver: Any
@@ -292,6 +293,7 @@ class MPCTransformer(nn.Module):
   encoder: Type[nn.Module] = Encoder
   oc_solver: Type[nn.Module] = OCSolver
   model_name: Optional[str] = None  
+  
 
   @nn.compact
   def __call__(self, inputs, *, train):
@@ -299,10 +301,10 @@ class MPCTransformer(nn.Module):
     x = inputs
     n, h, w, c = x.shape
     
-    if not config['data']['type'] == 'map':
+    if self.pooling is not None:
       x = nn.avg_pool(x, 
-                      window_shape=(4,4),
-                      strides=(4,4))
+                      window_shape=self.pooling,
+                      strides=self.pooling)
 
     # We can merge s2d+emb into a single conv; it's the same.
     x = nn.Conv(features=self.hidden_size,
