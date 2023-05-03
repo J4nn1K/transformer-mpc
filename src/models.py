@@ -19,6 +19,7 @@ import jax.numpy as jnp
 import jax
 
 from trajax import optimizers
+from src.config import config
 
 Array = Any
 PRNGKey = Any
@@ -297,6 +298,9 @@ class MPCTransformer(nn.Module):
 
     x = inputs
     n, h, w, c = x.shape
+    
+    if not config['data']['type'] == 'map':
+      x = nn.avg_pool(window_shape=(4,4))(x)
 
     # We can merge s2d+emb into a single conv; it's the same.
     x = nn.Conv(features=self.hidden_size,
