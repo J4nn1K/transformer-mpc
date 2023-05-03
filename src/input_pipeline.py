@@ -16,9 +16,9 @@ class FieldDataset(Dataset):
     if config['data']['type'] == 'map':
       self.inputs = data['maps']
     elif config['data']['type'] == 'rgb':
-      self.inputs = data['color_images']
+      self.inputs = data['color_images']/255.0
     elif config['data']['type'] == 'depth':
-      self.inputs = data['depth_images']
+      self.inputs = data['depth_images']/255.0
     else:
       print('unkown data type')
     
