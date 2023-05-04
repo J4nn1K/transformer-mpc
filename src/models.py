@@ -19,6 +19,7 @@ import jax.numpy as jnp
 import jax
 
 from trajax import optimizers
+from src.config import config
 
 Array = Any
 PRNGKey = Any
@@ -215,12 +216,12 @@ class OCSolver(nn.Module):
     x = inputs
     n, _ = x.shape
     
-    P = x[:, :36].reshape((n, 6, 6))
-    q = x[:, 36:].reshape((n, 6))
+    P_batch = x[:, :36].reshape((n, 6, 6))
+    q_batch = x[:, 36:].reshape((n, 6))
         
     u_opt_list = []
-    for i in range(n):
-    
+
+    def ilqr_solver(P,q):
       @jax.jit
       def system(x, u, t):
         """Classic (omnidirectional) wheeled robot system.
@@ -250,8 +251,8 @@ class OCSolver(nn.Module):
         xu = jnp.concatenate([x,u])
         
         stage_cost = w['reference'] * jnp.dot(u_err, u_err)
-        stage_cost += w['learned'] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P[i].T), P[i]), xu)
-        stage_cost += w['learned'] * jnp.matmul(q[i].T, xu)
+        stage_cost += w['learned'] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P.T), P), xu)
+        stage_cost += w['learned'] * jnp.matmul(q.T, xu)
         
         # stage_cost = jnp.dot(jnp.concatenate([x,u]), jnp.dot(P[i], jnp.concatenate([x,u]))) + jnp.dot(q[i], jnp.concatenate([x,u])) + jnp.dot(u_x_err, u_x_err) + jnp.dot(u,u)
         # stage_cost = jnp.dot(jnp.concatenate([x,u]), jnp.dot(P[i], jnp.concatenate([x,u]))) + jnp.dot(q[i], jnp.concatenate([x,u])) + 100*jnp.dot(u_x_err, u_x_err) + jnp.dot(u,u)
@@ -271,15 +272,17 @@ class OCSolver(nn.Module):
           maxiter=1000
       ) 
       
-      # print(U[:,0])
+      return U
       
-      u_opt_list.append(U)    
+    ilqr_solver_batch = jax.vmap(ilqr_solver, in_axes=(0, 0))
+    u_opt_list = ilqr_solver_batch(P_batch, q_batch)    
     
-    return jnp.array(u_opt_list)
+    return u_opt_list
 
 
 class MPCTransformer(nn.Module):
   """MPCTransformer."""
+  
 
   patches: Any
   transformer: Any
@@ -290,12 +293,18 @@ class MPCTransformer(nn.Module):
   encoder: Type[nn.Module] = Encoder
   oc_solver: Type[nn.Module] = OCSolver
   model_name: Optional[str] = None  
+  pooling: Optional[Any] = None
 
   @nn.compact
   def __call__(self, inputs, *, train):
 
     x = inputs
     n, h, w, c = x.shape
+    
+    if self.pooling is not None:
+      x = nn.avg_pool(x, 
+                      window_shape=self.pooling,
+                      strides=self.pooling)
 
     # We can merge s2d+emb into a single conv; it's the same.
     x = nn.Conv(features=self.hidden_size,

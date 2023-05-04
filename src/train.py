@@ -105,7 +105,6 @@ def train(model, num_epochs, train_loader, val_loader, use_wandb=False):
 
     for metric, value in state.metrics.compute().items():  # compute metrics
       metrics_history[f'train_{metric}'].append(value)     # record metrics
-      wandb.log({f'train_{metric}': value})
     state = state.replace(metrics=state.metrics.empty())   # reset metrics
     
     test_state = state
@@ -123,11 +122,14 @@ def train(model, num_epochs, train_loader, val_loader, use_wandb=False):
       
     for metric, value in test_state.metrics.compute().items():
       metrics_history[f'val_{metric}'].append(value)
-      wandb.log({f'val_{metric}': value})
+      
     test_state = state.replace(metrics=test_state.metrics.empty())
   
     print(f"Epoch: {epoch+1}, "
           f"Train Loss: {metrics_history['train_loss'][-1]:.6f}, "
           f"Val Loss: {metrics_history['val_loss'][-1]:.6f}, ")  
 
+    wandb.log({'Train Loss': metrics_history['train_loss'][-1],
+               'Validation Loss': metrics_history['val_loss'][-1]})
+          
   return state, metrics_history

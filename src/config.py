@@ -5,6 +5,7 @@ config = {
     'shape': (100, 100, 1)  # H x W x C
   },
   'model': {
+    # 'pooling': (4,4),
     'patches': (5,5),
     'transformer': {
       'num_layers': 3,
@@ -29,7 +30,8 @@ config = {
     'train_ratio': 0.8,
     'batch_size': 1,
     'learning_rate': 0.01,
-    'num_epochs': 25,
+    'num_epochs': 40,
     'momentum' : 0.9,
+    'checkpoint_dir': 'checkpoints/map/'
   }
 }

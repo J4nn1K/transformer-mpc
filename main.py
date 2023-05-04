@@ -17,7 +17,7 @@ model = MPCTransformer(**model_config)
 num_epochs = config['training']['num_epochs'] 
 state, metrics_history = train(model, num_epochs, train_loader, val_loader)
 
-CKPT_DIR = 'checkpoints/'
+CKPT_DIR = config['training']['checkpoint_dir']
 
 checkpoints.save_checkpoint(ckpt_dir=CKPT_DIR, target=state, step=0)
 restored_state = checkpoints.restore_checkpoint(ckpt_dir=CKPT_DIR, target=state)
