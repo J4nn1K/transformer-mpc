@@ -1,5 +1,6 @@
 # Custom
-/data/ignore
+/data/*.pt
+/data/*.npz
 /videos
 
 # Byte-compiled / optimized / DLL files
