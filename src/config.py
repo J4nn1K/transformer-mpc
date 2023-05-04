@@ -5,7 +5,7 @@ config = {
     'shape': (100, 100, 1)  # H x W x C
   },
   'model': {
-    'pooling': (4,4),
+    # 'pooling': (4,4),
     'patches': (5,5),
     'transformer': {
       'num_layers': 3,
