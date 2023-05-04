@@ -3,11 +3,14 @@ Real-world robot navigation in human-centric environments remains an unsolved pr
 
 ![](https://github.com/J4nn1K/transformer-mpc/blob/main/docs/figures/architecture.png)
 
-## Installation
+## Training & Inference
+Clone this repo, install dependencies, and instal the python module `transformer-mpc`.
 ```
 pip install -r requirements.txt
 pip install -e .
 ```
+It is recommended to train on TPUs since this implementation uses JAX and the dataset is large. Instructions on how to set up a TPU can be found in this repo's [docs](https://github.com/J4nn1K/transformer-mpc/tree/main/docs). With Google's [TPU Research Cloud](https://sites.research.google/trc/about/) you can apply for on-demand Cloud TPU access free of charge for 30 days.
+
 ## Dataset
 ![](https://github.com/J4nn1K/transformer-mpc/blob/main/docs/figures/data.png)
 The dataset that the models were trained on consists of three different sensor measurements: Occupancy Grids (100x100x1), RGB Images (640x480x3), and Depth Images (640x480x1).
