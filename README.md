@@ -11,6 +11,14 @@ pip install -e .
 ```
 It is recommended to train on TPUs since this implementation uses JAX and the dataset is large. Instructions on how to set up a TPU can be found in this repo's [docs](https://github.com/J4nn1K/transformer-mpc/tree/main/docs). With Google's [TPU Research Cloud](https://sites.research.google/trc/about/) you can apply for on-demand Cloud TPU access free of charge for 30 days.
 
+To train the model make changes to `/src/config` and run:
+```
+python3 main.py
+```
+Currently [Weights & Biases](https://wandb.ai/site) is used for logging. You will be prompted to log in with a W&B account.
+
+Up until this point the training performance is insufficient for the model to be deployed for inference.
+
 ## Dataset
 ![](https://github.com/J4nn1K/transformer-mpc/blob/main/docs/figures/data.png)
 The dataset that the models were trained on consists of three different sensor measurements: Occupancy Grids (100x100x1), RGB Images (640x480x3), and Depth Images (640x480x1).
