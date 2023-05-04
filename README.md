@@ -3,14 +3,16 @@ Real-world robot navigation in human-centric environments remains an unsolved pr
 
 ![](https://github.com/J4nn1K/transformer-mpc/blob/main/docs/figures/architecture.png)
 
-## How to run
-The easiest way to reproduce the training is by uploading `main_collab.ipynb` to Google Collab. Make sure to save the dataset mentioned in the abstract in your Google Drive.
-
 ## Installation
 ```
+pip install -r requirements.txt
 pip install -e .
 ```
-## How to download the dataset
+## Dataset
+![](https://github.com/J4nn1K/transformer-mpc/blob/main/docs/figures/data.png)
+The dataset that the models were trained on consists of three different sensor measurements: Occupancy Grids (100x100x1), RGB Images (640x480x3), and Depth Images (640x480x1).
+
+Download the dataset:
 ```
 export FILE_ID=1oeb7QHveAzVp08Jwiv7pepLB9geRFUHO
 export FILENAME=obstacles.npz
