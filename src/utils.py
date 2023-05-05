@@ -32,6 +32,9 @@ def save_grids_as_video(grids, indices, video_filename, freq_out, upscale_factor
         # Convert the grid to the correct format for the video writer
         # grid_BGR = (grid_color_mapped[:, :, :3] * 255).astype(np.uint8)
         
+        # print(grid.shape)
+        grid = np.transpose(np.flip(grid[:,:,0]))
+        
         grid_BGR = cv2.cvtColor(grid.astype(np.uint8), cv2.COLOR_RGB2BGR)
 
         # Resize the frame
