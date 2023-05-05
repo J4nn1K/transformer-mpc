@@ -289,6 +289,7 @@ class MPCTransformer(nn.Module):
   solver: Any
   hidden_size: int
   num_output: int
+  mlp_head: Any
   head_bias_init: float = 0.
   encoder: Type[nn.Module] = Encoder
   oc_solver: Type[nn.Module] = OCSolver
@@ -327,8 +328,11 @@ class MPCTransformer(nn.Module):
     
     # Linear layer
     # x = x[:, 0]
-    x = nn.Dense(features=self.num_output,
-                 name='head')(x)
+    
+    if self.mlp_head:
+      x = nn.Dense(features=self.num_output,
+                  name='head')(x)
+    
     # x = nn.tanh(x)
     
     x = self.oc_solver(name='Solver', **self.solver)(x)

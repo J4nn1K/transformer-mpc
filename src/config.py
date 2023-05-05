@@ -7,6 +7,7 @@ config = {
   'model': {
     # 'pooling': (4,4),
     'patches': (5,5),
+    'mlp_head': False,
     'transformer': {
       'num_layers': 3,
       'mlp_dim': 64,
