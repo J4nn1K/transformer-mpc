@@ -282,7 +282,6 @@ class OCSolver(nn.Module):
 
 class MPCTransformer(nn.Module):
   """MPCTransformer."""
-  
 
   patches: Any
   transformer: Any
@@ -319,21 +318,15 @@ class MPCTransformer(nn.Module):
     if self.transformer is not None:
       n, h, w, c = x.shape
       x = jnp.reshape(x, [n, h * w, c])
-
       x = self.encoder(name='Transformer', **self.transformer)(x, train=train)
       
     # Final embedding of a single token 
-    x = x[:, -1]
-    
+    x = x[:, 0]
     
     # Linear layer
-    # x = x[:, 0]
-    
     if self.mlp_head:
       x = nn.Dense(features=self.num_output,
                   name='head')(x)
-    
-    # x = nn.tanh(x)
     
     x = self.oc_solver(name='Solver', **self.solver)(x)
 
