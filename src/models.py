@@ -245,7 +245,7 @@ class OCSolver(nn.Module):
         return x + self.dt * system(x, u, t)  
 
       def cost(x, u, t):
-        w = self.cost_weights
+        # w = self.cost_weights
         
         err = jnp.array([0.4, 0.0, 0.0]) - x
         
