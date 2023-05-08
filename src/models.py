@@ -218,7 +218,7 @@ class OCSolver(nn.Module):
     
     P_batch = x[:, :36].reshape((n, 6, 6))
     q_batch = x[:, 36:42].reshape((n, 6))
-    w_batch = x[:, 42:].reshape((n,3))
+    w_batch = x[:, 42:].reshape((n,4))
         
     u_opt_list = []
 
