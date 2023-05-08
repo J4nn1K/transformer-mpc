@@ -219,7 +219,7 @@ class OCSolver(nn.Module):
     P_batch = x[:, :36].reshape((n, 6, 6))
     q_batch = x[:, 36:42].reshape((n, 6))
     w_batch = x[:, 42:].reshape((n,4))
-        
+
     u_opt_list = []
 
     def ilqr_solver(P,q,w):
@@ -251,12 +251,12 @@ class OCSolver(nn.Module):
         
         xu = jnp.concatenate([x,u])
         
-        stage_cost = w[0] * jnp.dot(err, err) \
-          + w[1] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P.T), P), xu) \
-          + w[1] * jnp.matmul(q.T, xu) \
-          + w[2] * jnp.dot(u, u) \
+        stage_cost = abs(w[0]) * jnp.dot(err, err) \
+          + abs(w[1]) * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P.T), P), xu) \
+          + abs(w[1]) * jnp.matmul(q.T, xu) \
+          + abs(w[2]) * jnp.dot(u, u) \
           
-        final_cost = w[3] * jnp.dot(err, err)
+        final_cost = abs(w[3]) * jnp.dot(err, err)
         
         return jnp.where(t == self.horizon, final_cost, stage_cost)
         # return stage_cost
