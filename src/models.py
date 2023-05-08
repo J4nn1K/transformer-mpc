@@ -217,11 +217,12 @@ class OCSolver(nn.Module):
     n, _ = x.shape
     
     P_batch = x[:, :36].reshape((n, 6, 6))
-    q_batch = x[:, 36:].reshape((n, 6))
+    q_batch = x[:, 36:42].reshape((n, 6))
+    w_batch = x[:, 42:].reshape((n,3))
         
     u_opt_list = []
 
-    def ilqr_solver(P,q):
+    def ilqr_solver(P,q,w):
       @jax.jit
       def system(x, u, t):
         """Classic (omnidirectional) wheeled robot system.
@@ -246,36 +247,35 @@ class OCSolver(nn.Module):
       def cost(x, u, t):
         w = self.cost_weights
         
-        u_err = jnp.array(self.u_des) - u
+        err = jnp.array([0.4, 0.0, 0.0]) - x
         
         xu = jnp.concatenate([x,u])
         
-        stage_cost = w['reference'] * jnp.dot(u_err, u_err)
-        stage_cost += w['learned'] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P.T), P), xu)
-        stage_cost += w['learned'] * jnp.matmul(q.T, xu)
+        stage_cost = w[0] * jnp.dot(err, err) \
+          + w[1] * jnp.matmul(jnp.matmul(jnp.matmul(xu.T, P.T), P), xu) \
+          + w[1] * jnp.matmul(q.T, xu) \
+          + w[2] * jnp.dot(u, u) \
+          
+        final_cost = w[3] * jnp.dot(err, err)
         
-        # stage_cost = jnp.dot(jnp.concatenate([x,u]), jnp.dot(P[i], jnp.concatenate([x,u]))) + jnp.dot(q[i], jnp.concatenate([x,u])) + jnp.dot(u_x_err, u_x_err) + jnp.dot(u,u)
-        # stage_cost = jnp.dot(jnp.concatenate([x,u]), jnp.dot(P[i], jnp.concatenate([x,u]))) + jnp.dot(q[i], jnp.concatenate([x,u])) + 100*jnp.dot(u_x_err, u_x_err) + jnp.dot(u,u)
-        
-        # final_cost = 0
-        # return jnp.where(t == horizon, final_cost, stage_cost)
-        
-        return stage_cost
+        return jnp.where(t == self.horizon, final_cost, stage_cost)
+        # return stage_cost
 
       x0 = jnp.array([0., 0., 0.])
       u0 = jnp.zeros((self.horizon, 3))
-      _, U, _, _, _, _, _ = optimizers.ilqr(
+      X, U, _, _, _, _, _ = optimizers.ilqr(
           cost,
           dynamics,
           x0,
           u0,
           maxiter=1000
       ) 
+      # print(X)
       
       return U
       
-    ilqr_solver_batch = jax.vmap(ilqr_solver, in_axes=(0, 0))
-    u_opt_list = ilqr_solver_batch(P_batch, q_batch)    
+    ilqr_solver_batch = jax.vmap(ilqr_solver, in_axes=(0, 0, 0))
+    u_opt_list = ilqr_solver_batch(P_batch, q_batch, w_batch)    
     
     return u_opt_list
 
