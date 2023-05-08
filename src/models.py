@@ -207,8 +207,8 @@ class OCSolver(nn.Module):
 
   dt: float
   horizon: int
-  cost_weights: dict
-  u_des: list
+  #cost_weights: dict
+  #u_des: list
 
   @nn.compact
   def __call__(self, inputs):
