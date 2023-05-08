@@ -326,8 +326,9 @@ class MPCTransformer(nn.Module):
     # Linear layer
     if self.mlp_head:
       x = nn.Dense(features=self.num_output,
-                  name='head')(x)
-    
+                  name='head',
+                  kernel_init=nn.initializers.ones)(x)
+  
     x = self.oc_solver(name='Solver', **self.solver)(x)
 
     return x
